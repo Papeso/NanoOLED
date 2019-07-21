@@ -28,7 +28,7 @@
 #if (defined(__AVR__) || defined(__SAMD21G18A__))
 #include <avr/pgmspace.h>
 #else
-  #ifndef (pgm_read_byte)
+  #ifndef pgm_read_byte
     #define pgm_read_byte(p) (*(p))
   #endif
 #endif

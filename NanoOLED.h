@@ -1,5 +1,5 @@
 /*
- * NanoOLED.h => NanoOLED.h
+ * NanoOLED => NanoOLED
  * SSD130x & SH1106 OLED Driver Library
  *
  * Copyright (c) 2011 seeed technology inc.

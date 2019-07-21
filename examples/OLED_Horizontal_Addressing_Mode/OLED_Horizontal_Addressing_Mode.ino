@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <NanoOled.h>
+#include <NanoOLED.h>
 
 
 NanoOLED NanoOled;
