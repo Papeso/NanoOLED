@@ -1,6 +1,5 @@
 #include <Wire.h>
-#include <SeeedOLED.h>
-#include <avr/pgmspace.h>
+#include <NanoOled.h>
 
 static const unsigned char SeeedLogo[] PROGMEM ={
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
@@ -69,14 +68,16 @@ static const unsigned char SeeedLogo[] PROGMEM ={
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   
 };
 
+NanoOLED NanoOled;
+
 void setup()
 {
   Wire.begin();	
-  SeeedOled.init();  //initialze SEEED OLED display
+  NanoOled.init();  //initialze SEEED OLED display
 
-  SeeedOled.setInverseDisplay();          // Set Display to inverse mode
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.setInverseDisplay();          // Set Display to inverse mode
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
 
 }
 

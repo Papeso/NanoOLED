@@ -1,5 +1,5 @@
 #######################################
-# Syntax Coloring Map For Seeed OLED
+# Syntax Coloring Map For Nano OLED
 #######################################
 
 #######################################
@@ -7,7 +7,7 @@
 #######################################
 
 addressingMode	KEYWORD1
-SeeedOled	KEYWORD1
+NanoOled	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -19,7 +19,7 @@ setInverseDisplay	KEYWORD1
 sendCommand	KEYWORD1
 setPageMode	KEYWORD1
 setHorizontalMode	KEYWORD1
-setTextXY	KEYWORD1
+setCursor	KEYWORD1
 clearDisplay	KEYWORD1
 setBrightness	KEYWORD1
 putChar	KEYWORD1
@@ -53,7 +53,7 @@ Scroll_256Frames	LITERAL1
 # Instances (KEYWORD2)
 #######################################
 
-SeeedOLED	KEYWORD2
+NanoOLED	KEYWORD2
 
 
 

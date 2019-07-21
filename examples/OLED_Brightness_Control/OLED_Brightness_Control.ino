@@ -1,6 +1,5 @@
 #include <Wire.h>
-#include <SeeedOLED.h>
-#include <avr/pgmspace.h>
+#include <NanoOled.h>
 
 static const unsigned char SeeedLogo[] PROGMEM ={
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
@@ -70,15 +69,16 @@ static const unsigned char SeeedLogo[] PROGMEM ={
 };
 
 unsigned char Brightness = 0;
+NanoOLED NanoOled;
 
 void setup()
 {
   Wire.begin();	
-  SeeedOled.init();  //initialze SEEED OLED display
+  NanoOled.init();  //initialze SEEED OLED display
 
-  SeeedOled.setInverseDisplay();          // Set inverse display
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.setInverseDisplay();          // Set inverse display
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
   
 
 }
@@ -86,16 +86,16 @@ void setup()
 void loop()
 {
   
-  SeeedOled.setBrightness(Brightness++);  // Change the brightness 0 - 255
-  SeeedOled.setPageMode();                // Set display addressing to page mode.
-  SeeedOled.setTextXY(7,13);              // Set the Cursor position to 7th Page , 13th Column
-  SeeedOled.putNumber(Brightness);       
+  NanoOled.setBrightness(Brightness++);  // Change the brightness 0 - 255
+  NanoOled.setPageMode();                // Set display addressing to page mode.
+  NanoOled.setCursor(7,13);              // Set the Cursor position to 7th Page , 13th Column
+  NanoOled.putNumber(Brightness);       
   delay(50);                              // Delay 50ms between different brightness number
   if(Brightness >= 255)
   {
     Brightness = 0;                      // Reset Brighness to 0.
-    SeeedOled.setTextXY(7,13);           // Display the brighness value starting from 7th Row, 13th Column 
-    SeeedOled.putString("   ");          // Clear 13,14 and 15th Columns. As the numbers are always left aligned - 2 digit and 3 digit will overwrite.
+    NanoOled.setCursor(7,13);           // Display the brighness value starting from 7th Row, 13th Column 
+    NanoOled.putString("   ");          // Clear 13,14 and 15th Columns. As the numbers are always left aligned - 2 digit and 3 digit will overwrite.
 
   }
 }

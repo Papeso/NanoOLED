@@ -1,6 +1,5 @@
 #include <Wire.h>
-#include <SeeedOLED.h>
-#include <avr/pgmspace.h>
+#include <NanoOled.h>
 
 static const unsigned char SeeedLogo[] PROGMEM ={
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
@@ -69,33 +68,35 @@ static const unsigned char SeeedLogo[] PROGMEM ={
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   
 };
 
+NanoOLED NanoOled;
+
 void setup()
 {
   Wire.begin();	
-  SeeedOled.init();  //initialze SEEED OLED display
+  NanoOled.init();  //initialze SEEED OLED display
 }
 
 void setDisplayToOriginalState(char testCase)
 
 {
   delay(5000);
-  SeeedOled.init();                       //initialze SEEED OLED display
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.deactivateScroll();           // deactivete Scroll (might be activated by previous test case)
-  SeeedOled.setNormalDisplay();           // Non-inverted Display 
-  SeeedOled.setPageMode();                // Page mode to start with
-  SeeedOled.setTextXY(2,0);               // 0 Page, 0th Column  
-  SeeedOled.putString("Test Case ");
-  SeeedOled.putNumber(testCase);
-  SeeedOled.setTextXY(3,0);
-  SeeedOled.putString("Test Case ");
-  SeeedOled.putNumber(testCase);
-  SeeedOled.setTextXY(4,0);
-  SeeedOled.putString("Test Case ");
-  SeeedOled.putNumber(testCase);
-  SeeedOled.setTextXY(5,0);
-  SeeedOled.putString("Test Case ");
-  SeeedOled.putNumber(testCase);
+  NanoOled.init();                       //initialze SEEED OLED display
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.deactivateScroll();           // deactivete Scroll (might be activated by previous test case)
+  NanoOled.setNormalDisplay();           // Non-inverted Display 
+  NanoOled.setPageMode();                // Page mode to start with
+  NanoOled.setCursor(2,0);               // 0 Page, 0th Column  
+  NanoOled.putString("Test Case ");
+  NanoOled.putNumber(testCase);
+  NanoOled.setCursor(3,0);
+  NanoOled.putString("Test Case ");
+  NanoOled.putNumber(testCase);
+  NanoOled.setCursor(4,0);
+  NanoOled.putString("Test Case ");
+  NanoOled.putNumber(testCase);
+  NanoOled.setCursor(5,0);
+  NanoOled.putString("Test Case ");
+  NanoOled.putNumber(testCase);
   delay(2000);
   
 
@@ -108,62 +109,62 @@ void loop()
 
   setDisplayToOriginalState(1);
 
-  SeeedOled.clearDisplay();          //clear the screen and set start position to top left corner
-  SeeedOled.setNormalDisplay();      //Set display to normal mode (i.e non-inverse mode)
-  SeeedOled.setPageMode();           //Set addressing mode to Page Mode
-  SeeedOled.setTextXY(0,0);          //Set the cursor to Xth Page, Yth Column  
-  SeeedOled.putString("Hello World!"); //Print the String
+  NanoOled.clearDisplay();          //clear the screen and set start position to top left corner
+  NanoOled.setNormalDisplay();      //Set display to normal mode (i.e non-inverse mode)
+  NanoOled.setPageMode();           //Set addressing mode to Page Mode
+  NanoOled.setCursor(0,0);          //Set the cursor to Xth Page, Yth Column  
+  NanoOled.putString("Hello World!"); //Print the String
 
 
   setDisplayToOriginalState(2);
 
-  SeeedOled.clearDisplay();           //clear the screen and set start position to top left corner
-  SeeedOled.setNormalDisplay();       //Set display to Normal mode
-  SeeedOled.setPageMode();            //Set addressing mode to Page Mode
-  SeeedOled.setTextXY(0,0);           //Set the cursor to 0th Page, 0th Column  
-  SeeedOled.putNumber(123);           //Print number
-  SeeedOled.setTextXY(1,0);           //Set the cursor to 1st Page, 0th Column  
-  SeeedOled.putNumber(0xFFFF);        //Print number
-  SeeedOled.setTextXY(2,0);           //Set the cursor to 2nd Page, 0th Column  
-  SeeedOled.putNumber(0xFFFFFFFF);    //Print number
-  SeeedOled.setTextXY(3,0);           //Set the cursor to 3rd Page, 0th Column  
-  SeeedOled.putNumber(-12345);        //Print number
+  NanoOled.clearDisplay();           //clear the screen and set start position to top left corner
+  NanoOled.setNormalDisplay();       //Set display to Normal mode
+  NanoOled.setPageMode();            //Set addressing mode to Page Mode
+  NanoOled.setCursor(0,0);           //Set the cursor to 0th Page, 0th Column  
+  NanoOled.putNumber(123);           //Print number
+  NanoOled.setCursor(1,0);           //Set the cursor to 1st Page, 0th Column  
+  NanoOled.putNumber(0xFFFF);        //Print number
+  NanoOled.setCursor(2,0);           //Set the cursor to 2nd Page, 0th Column  
+  NanoOled.putNumber(0xFFFFFFFF);    //Print number
+  NanoOled.setCursor(3,0);           //Set the cursor to 3rd Page, 0th Column  
+  NanoOled.putNumber(-12345);        //Print number
 
 
   setDisplayToOriginalState(3);
   
-  SeeedOled.clearDisplay();           //clear the screen and set start position to top left corner
-  SeeedOled.setNormalDisplay();       //Set display to Normal mode
-  SeeedOled.setHorizontalMode();      //Set addressing mode to Horizontal Mode
-  SeeedOled.putString("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");  //Print String (ASCII 32 - 126 )
+  NanoOled.clearDisplay();           //clear the screen and set start position to top left corner
+  NanoOled.setNormalDisplay();       //Set display to Normal mode
+  NanoOled.setHorizontalMode();      //Set addressing mode to Horizontal Mode
+  NanoOled.putString("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");  //Print String (ASCII 32 - 126 )
 
 
 
   setDisplayToOriginalState(4);
   
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
 
   setDisplayToOriginalState(5);
   
-  SeeedOled.setInverseDisplay();          // Set Display to inverse mode
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.setInverseDisplay();          // Set Display to inverse mode
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
 
   setDisplayToOriginalState(6);
   
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
-  SeeedOled.setHorizontalScrollProperties(Scroll_Left,4,7,Scroll_5Frames); //Set Scrolling properties to Scroll Left
-  SeeedOled.activateScroll();             // Activate Scrolling
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.setHorizontalScrollProperties(Scroll_Left,4,7,Scroll_5Frames); //Set Scrolling properties to Scroll Left
+  NanoOled.activateScroll();             // Activate Scrolling
   delay(5000);
   
   setDisplayToOriginalState(7);
 
-  SeeedOled.clearDisplay();               // clear the screen and set start position to top left corner
-  SeeedOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
-  SeeedOled.setHorizontalScrollProperties(Scroll_Right,4,7,Scroll_5Frames);  //Set the properties of Horizontal Scrool
-  SeeedOled.activateScroll();             // Activate Scroll
+  NanoOled.clearDisplay();               // clear the screen and set start position to top left corner
+  NanoOled.drawBitmap((unsigned char*) SeeedLogo,1024);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.setHorizontalScrollProperties(Scroll_Right,4,7,Scroll_5Frames);  //Set the properties of Horizontal Scrool
+  NanoOled.activateScroll();             // Activate Scroll
   delay(5000);  
 
   
