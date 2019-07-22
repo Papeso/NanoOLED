@@ -28,9 +28,9 @@
 #if (defined(__AVR__) || defined(__SAMD21G18A__))
 #include <avr/pgmspace.h>
 #else
-  #ifndef pgm_read_byte
-    #define pgm_read_byte(p) (*(p))
-  #endif
+#ifndef pgm_read_byte
+#define pgm_read_byte(p) (*(p))
+#endif
 #endif
 
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -151,35 +151,36 @@ void NanoOLED::init()
 void NanoOLED::defaultInit()
 {
   const unsigned char initializeCmd[] = {
-    0xAE, /* Entire Display OFF */
-    0xD5, /* Set Display Clock Divide Ratio and Oscillator Frequency */
-    0x80, /* Default Setting for Display Clock Divide Ratio and Oscillator Frequency that is recommended */
-    0xA8, /* Set Multiplex Ratio */
-    0x3F, /* 64 COM lines */
-    0xD3, /* Set display offset */
-    0x00, /* 0 offset */
-    0x40, /* Set first line as the start line of the display */
-    0x8D, /* Charge pump */
-    0x14, /* Enable charge dump during display on */
-    0x20, /* Set memory addressing mode */
-    0x00, /* Horizontal addressing mode */
-    0xA1, /* Set segment remap with column address 127 mapped to segment 0 */
-    0xC8, /* Set com output scan direction, scan from com63 to com 0 */
-    0xDA, /* Set com pins hardware configuration */
-    0x12, /* Alternative com pin configuration, disable com left/right remap */
-    0x81, /* Set contrast control */
-    0x80, /* Set Contrast to 128 */
-    0xD9, /* Set pre-charge period */
-    0xF1, /* Phase 1 period of 15 DCLK, Phase 2 period of 1 DCLK */
-    0xDB, /* Set Vcomh deselect level */
-    0x20, /* Vcomh deselect level ~ 0.77 Vcc */
-    0xA4, /* Entire display ON, resume to RAM content display */
-    0xA6, /* Set Display in Normal Mode, 1 = ON, 0 = OFF */
-    0x2E, /* Deactivate scroll */
-    0xAF  /* Display on in normal mode */
+      0xAE, /* Entire Display OFF */
+      0xD5, /* Set Display Clock Divide Ratio and Oscillator Frequency */
+      0x80, /* Default Setting for Display Clock Divide Ratio and Oscillator Frequency that is recommended */
+      0xA8, /* Set Multiplex Ratio */
+      0x3F, /* 64 COM lines */
+      0xD3, /* Set display offset */
+      0x00, /* 0 offset */
+      0x40, /* Set first line as the start line of the display */
+      0x8D, /* Charge pump */
+      0x14, /* Enable charge dump during display on */
+      0x20, /* Set memory addressing mode */
+      0x00, /* Horizontal addressing mode */
+      0xA1, /* Set segment remap with column address 127 mapped to segment 0 */
+      0xC8, /* Set com output scan direction, scan from com63 to com 0 */
+      0xDA, /* Set com pins hardware configuration */
+      0x12, /* Alternative com pin configuration, disable com left/right remap */
+      0x81, /* Set contrast control */
+      0x80, /* Set Contrast to 128 */
+      0xD9, /* Set pre-charge period */
+      0xF1, /* Phase 1 period of 15 DCLK, Phase 2 period of 1 DCLK */
+      0xDB, /* Set Vcomh deselect level */
+      0x20, /* Vcomh deselect level ~ 0.77 Vcc */
+      0xA4, /* Entire display ON, resume to RAM content display */
+      0xA6, /* Set Display in Normal Mode, 1 = ON, 0 = OFF */
+      0x2E, /* Deactivate scroll */
+      0xAF  /* Display on in normal mode */
   };
   const int cmdLen = sizeof(initializeCmd) / sizeof(initializeCmd[0]);
-  for(int idx = 0; idx < cmdLen; idx++) {
+  for (int idx = 0; idx < cmdLen; idx++)
+  {
     sendCommand(initializeCmd[idx]);
   }
 }
@@ -202,14 +203,14 @@ void NanoOLED::setHorizontalMode()
 {
   memMode = HORIZONTAL_MODE;
   sendCommand(OLED_Memory_Mode); //set addressing mode
-  sendCommand(HORIZONTAL_MODE); //set horizontal addressing mode
+  sendCommand(HORIZONTAL_MODE);  //set horizontal addressing mode
 }
 
 void NanoOLED::setPageMode()
 {
   memMode = PAGE_MODE;
   sendCommand(OLED_Memory_Mode); //set addressing mode
-  sendCommand(PAGE_MODE); //set page addressing mode
+  sendCommand(PAGE_MODE);        //set page addressing mode
 }
 
 void NanoOLED::setCursor(unsigned char row, unsigned char col)
@@ -244,14 +245,25 @@ void NanoOLED::clearDisplay()
 void NanoOLED::sendData(unsigned char Data)
 {
   Wire.beginTransmission(OLED_Address); // begin I2C transmission
-#if defined(ARDUINO) && ARDUINO >= 100
-  Wire.write(OLED_Data_Mode); // data mode
-  Wire.write(Data);
-#else
-  Wire.send(OLED_Data_Mode); // data mode
-  Wire.send(Data);
-#endif
+  Wire_Write(OLED_Data_Mode);           // data mode
+  Wire_Write(Data);
   Wire.endTransmission(); // stop I2C transmission
+}
+
+// Max 15 pixels
+int NanoOLED::sendPixels(const unsigned char *pix, int len)
+{
+  Wire.beginTransmission(OLED_Address); // begin I2C transmission
+  Wire_Write(OLED_Data_Mode);           // data mode
+  if(len > 15) {
+    len = 15;
+  }
+  for (int idx = 0; idx < len; idx++)
+  {
+    Wire_Write(pgm_read_byte(&(pix[idx])));
+  }
+  Wire.endTransmission(); // stop I2C transmission
+  return len;
 }
 
 void NanoOLED::putChar(unsigned char c)
@@ -261,11 +273,8 @@ void NanoOLED::putChar(unsigned char c)
     c = ' '; //Space
   }
   unsigned char i = 0;
-  for (i = 0; i < 6; i++)
-  {
-    //read bytes from code memory
-    sendData(pgm_read_byte(&BasicFont[c - 32][i])); //font array starts at 0, ASCII starts at 32. Hence the translation
-  }
+
+  sendPixels(&BasicFont[c - 32][0], 6); //font array starts at 0, ASCII starts at 32. Hence the translation
 }
 
 void NanoOLED::putString(const char *String)
@@ -386,24 +395,42 @@ unsigned char NanoOLED::putFloat(float floatNumber)
   return f;
 }
 
-void NanoOLED::drawBitmap(unsigned char *bitmaparray, int bytes)
+void NanoOLED::drawBitmap(unsigned char *bitmaparray, unsigned char row_start, unsigned char col_start, unsigned char row, unsigned char col)
 {
-  char localAddressMode = memMode;
-  if (memMode != HORIZONTAL_MODE)
+
+  if (chipType == SH1106)
   {
-    //Bitmap is drawn in horizontal mode
-    setHorizontalMode();
+    int idx = 0;
+    for (unsigned char p = row_start; p < row_start + row; p++)
+    {
+      setCursor(p, col_start);
+      for (unsigned char c = 0; c < col;)
+      {
+        unsigned char n = sendPixels(&bitmaparray[idx], col - c);
+        idx += n;
+        c += n;
+      }
+    }
   }
 
-  for (int i = 0; i < bytes; i++)
+  if (chipType == SSD1306)
   {
-    sendData(pgm_read_byte(&bitmaparray[i]));
-  }
-
-  if (localAddressMode == PAGE_MODE)
-  {
-    //If pageMode was used earlier, restore it.
-    setPageMode();
+    char localAddressMode = memMode;
+    if (memMode != HORIZONTAL_MODE)
+    {
+      //Bitmap is drawn in horizontal mode
+      setHorizontalMode();
+    }
+    setCursor(row_start, col_start);
+    int len = row * col;
+    for(int idx = 0; idx < len;) {
+      idx += sendPixels(&bitmaparray[idx], len - idx);
+    }
+    if (localAddressMode == PAGE_MODE)
+    {
+      //If pageMode was used earlier, restore it.
+      setPageMode();
+    }
   }
 }
 
@@ -475,3 +502,15 @@ NanoOLED::NanoOLED(OLED_CHIP chip) : chipType(chip)
 {
   return;
 }
+
+/*
+void NanoOLED::setDisplayArea(unsigned char page_start, unsigned char page_end, unsigned char col_start, unsigned char col_end)
+{
+  sendCommand(Set_Col_Range);
+  sendCommand(col_start);
+  sendCommand(col_end);
+  sendCommand(Set_Page_Range);
+  sendCommand(page_start);
+  sendCommand(page_end);
+}
+*/

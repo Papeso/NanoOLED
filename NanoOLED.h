@@ -40,7 +40,7 @@ enum OLED_CHIP
 {
     SSD1306,
     SH1106
-}
+};
 
 enum OLED_MEMODE
 {
@@ -81,7 +81,7 @@ enum SCROLL_DIR
     Scroll_Right = 0x01,
 };
 
-enum SCROLL_FRAMES
+enum SCROLL_SPEED
 {
     Scroll_2Frames = 0x7,
     Scroll_3Frames = 0x4,
@@ -95,11 +95,11 @@ enum SCROLL_FRAMES
 
 class NanoOLED
 {
-
-public:
+private:
     OLED_MEMODE memMode;
     OLED_CHIP chipType;
 
+public:
     NanoOLED();
     NanoOLED(OLED_CHIP chip);
 
@@ -111,6 +111,7 @@ public:
 
     void sendCommand(unsigned char command);
     void sendData(unsigned char Data);
+    int sendPixels(const unsigned char *pix, int len);
 
     void setPageMode();
     void setHorizontalMode();
@@ -123,17 +124,9 @@ public:
     unsigned char putNumber(long n);
     unsigned char putFloat(float floatNumber, unsigned char decimal);
     unsigned char putFloat(float floatNumber);
-    void drawBitmap(unsigned char *bitmaparray, int bytes);
-
-    /*
-    void setDisplayArea(unsigned char page_start, unsigned char page_end, unsigned char col_start, unsigned char col_end) {
-        sendCommand(Set_Col_Range);
-        sendCommand(col_start);
-        sendCommand(col_end);
-        sendCommand(Set_Page_Range);
-        sendCommand(page_start);
-        sendCommand(page_end);
-    }*/
+    void drawBitmap(unsigned char *bitmaparray, unsigned char row_start, unsigned char col_start, unsigned char row, unsigned char col);
+    
+    // void setDisplayArea(unsigned char page_start, unsigned char page_end, unsigned char col_start, unsigned char col_end);
 
     void setHorizontalScrollProperties(unsigned char direction, unsigned char startPage, unsigned char endPage, unsigned char scrollSpeed);
     void activateScroll();
