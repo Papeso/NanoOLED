@@ -1,5 +1,5 @@
 /*
- * NanoOLED => NanoOLED
+ * SeeedOLED.h => NanoOLED.h
  * SSD130x & SH1106 OLED Driver Library
  *
  * Copyright (c) 2011 seeed technology inc.
@@ -32,6 +32,17 @@
 #else
 #include <WProgram.h>
 #include "Wire.h"
+#include "Print.h"
+#endif
+
+#ifndef MAX_I2C_TRANSFER_BYTES
+#define MAX_I2C_TRANSFER_BYTES 16
+#endif
+
+#ifdef NANOLED_PRINTF
+#ifndef NANOLED_FMT_BUF_SIZE
+#define NANOLED_FMT_BUF_SIZE 32
+#endif
 #endif
 
 const char OLED_Address = 0x3c;
@@ -93,42 +104,46 @@ enum SCROLL_SPEED
     Scroll_256Frames = 0x3,
 };
 
-class NanoOLED
+class NanoOLED : public Print
 {
 private:
     OLED_MEMODE memMode;
     OLED_CHIP chipType;
 
+    void defaultInit();
+
 public:
-    NanoOLED();
-    NanoOLED(OLED_CHIP chip);
+    NanoOLED() : chipType(SSD1306){};
+    NanoOLED(OLED_CHIP chip) : chipType(chip){};
 
     void init();
-    void defaultInit();
+
+    virtual size_t write(uint8_t byte);
+    using Print::write;
 
     void setNormalDisplay();
     void setInverseDisplay();
 
-    void sendCommand(unsigned char command);
-    void sendData(unsigned char Data);
-    int sendPixels(const unsigned char *pix, int len);
+#ifdef NANOLED_PRINTF
+    void Printf(const char *fmt, ...);
+#endif
+
+    void sendCommand(uint8_t command);
+    void sendData(uint8_t Data);
+    size_t sendPixels(const uint8_t *pix, size_t len);
 
     void setPageMode();
     void setHorizontalMode();
 
-    void setCursor(unsigned char row, unsigned char col);
+    void setCursor(uint8_t row, uint8_t col);
     void clearDisplay();
-    void setBrightness(unsigned char Brightness);
-    void putChar(unsigned char c);
-    void putString(const char *String);
-    unsigned char putNumber(long n);
-    unsigned char putFloat(float floatNumber, unsigned char decimal);
-    unsigned char putFloat(float floatNumber);
-    void drawBitmap(unsigned char *bitmaparray, unsigned char row_start, unsigned char col_start, unsigned char row, unsigned char col);
-    
-    // void setDisplayArea(unsigned char page_start, unsigned char page_end, unsigned char col_start, unsigned char col_end);
+    void setBrightness(uint8_t Brightness);
+    void putChar(uint8_t c);
+    void drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col);
 
-    void setHorizontalScrollProperties(unsigned char direction, unsigned char startPage, unsigned char endPage, unsigned char scrollSpeed);
+    // void setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end);
+
+    void setHorizontalScrollProperties(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t scrollSpeed);
     void activateScroll();
     void deactivateScroll();
 };

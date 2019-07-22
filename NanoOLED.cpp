@@ -1,5 +1,5 @@
 /*
- * NanoOled.cpp => NanoOLED.cpp
+ * SeeedOLED.cpp => NanoOLED.cpp
  * SSD130x OLED Driver Library
  *
  * Copyright (c) 2011 seeed technology inc.
@@ -44,7 +44,7 @@
 // BasicFont is placed in code memory.
 
 // This font be freely used without any restriction(It is placed in public domain)
-const unsigned char BasicFont[][6] PROGMEM =
+const uint8_t BasicFont[][6] PROGMEM =
     {
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
         {0x00, 0x00, 0x5F, 0x00, 0x00, 0x00},
@@ -150,7 +150,7 @@ void NanoOLED::init()
 
 void NanoOLED::defaultInit()
 {
-  const unsigned char initializeCmd[] = {
+  const uint8_t initializeCmd[] = {
       0xAE, /* Entire Display OFF */
       0xD5, /* Set Display Clock Divide Ratio and Oscillator Frequency */
       0x80, /* Default Setting for Display Clock Divide Ratio and Oscillator Frequency that is recommended */
@@ -185,7 +185,7 @@ void NanoOLED::defaultInit()
   }
 }
 
-void NanoOLED::sendCommand(unsigned char command)
+void NanoOLED::sendCommand(uint8_t command)
 {
   Wire.beginTransmission(OLED_Address); // begin I2C communication
   Wire_Write(OLED_Command_Mode);        // Set OLED Command mode
@@ -193,7 +193,7 @@ void NanoOLED::sendCommand(unsigned char command)
   Wire.endTransmission(); // End I2C communication
 }
 
-void NanoOLED::setBrightness(unsigned char Brightness)
+void NanoOLED::setBrightness(uint8_t Brightness)
 {
   sendCommand(OLED_Set_Brightness_Cmd);
   sendCommand(Brightness);
@@ -213,7 +213,7 @@ void NanoOLED::setPageMode()
   sendCommand(PAGE_MODE);        //set page addressing mode
 }
 
-void NanoOLED::setCursor(unsigned char row, unsigned char col)
+void NanoOLED::setCursor(uint8_t row, uint8_t col)
 {
   if (chipType == SH1106)
   {
@@ -226,7 +226,7 @@ void NanoOLED::setCursor(unsigned char row, unsigned char col)
 
 void NanoOLED::clearDisplay()
 {
-  unsigned char i, j;
+  uint8_t i, j;
   sendCommand(OLED_Display_Off_Cmd); //display off
   for (j = 0; j < 8; j++)
   {
@@ -242,7 +242,7 @@ void NanoOLED::clearDisplay()
   setCursor(0, 0);
 }
 
-void NanoOLED::sendData(unsigned char Data)
+void NanoOLED::sendData(uint8_t Data)
 {
   Wire.beginTransmission(OLED_Address); // begin I2C transmission
   Wire_Write(OLED_Data_Mode);           // data mode
@@ -251,14 +251,15 @@ void NanoOLED::sendData(unsigned char Data)
 }
 
 // Max 15 pixels
-int NanoOLED::sendPixels(const unsigned char *pix, int len)
+size_t NanoOLED::sendPixels(const uint8_t *pix, size_t len)
 {
   Wire.beginTransmission(OLED_Address); // begin I2C transmission
   Wire_Write(OLED_Data_Mode);           // data mode
-  if(len > 15) {
-    len = 15;
+  if (len > MAX_I2C_TRANSFER_BYTES - 1)
+  {
+    len = MAX_I2C_TRANSFER_BYTES - 1;
   }
-  for (int idx = 0; idx < len; idx++)
+  for (size_t idx = 0; idx < len; idx++)
   {
     Wire_Write(pgm_read_byte(&(pix[idx])));
   }
@@ -266,147 +267,27 @@ int NanoOLED::sendPixels(const unsigned char *pix, int len)
   return len;
 }
 
-void NanoOLED::putChar(unsigned char c)
+void NanoOLED::putChar(uint8_t c)
 {
   if (c < 32 || c > 127) //Ignore non-printable ASCII characters. This can be modified for multilingual font.
   {
     c = ' '; //Space
   }
-  unsigned char i = 0;
-
   sendPixels(&BasicFont[c - 32][0], 6); //font array starts at 0, ASCII starts at 32. Hence the translation
 }
 
-void NanoOLED::putString(const char *String)
-{
-  unsigned char i = 0;
-  while (String[i])
-  {
-    putChar(String[i]);
-    i++;
-  }
-}
-
-unsigned char NanoOLED::putNumber(long long_num)
-{
-  unsigned char char_buffer[10] = "";
-  unsigned char i = 0;
-  unsigned char f = 0;
-
-  if (long_num < 0)
-  {
-    f = 1;
-    putChar('-');
-    long_num = -long_num;
-  }
-  else if (long_num == 0)
-  {
-    f = 1;
-    putChar('0');
-    return f;
-  }
-
-  while (long_num > 0)
-  {
-    char_buffer[i++] = long_num % 10;
-    long_num /= 10;
-  }
-
-  f = f + i;
-  for (; i > 0; i--)
-  {
-    putChar('0' + char_buffer[i - 1]);
-  }
-  return f;
-}
-
-unsigned char NanoOLED::putFloat(float floatNumber, unsigned char decimal)
-{
-  unsigned int temp = 0;
-  float decy = 0.0;
-  float rounding = 0.5;
-  unsigned char f = 0;
-  if (floatNumber < 0.0)
-  {
-    putString("-");
-    floatNumber = -floatNumber;
-    f += 1;
-  }
-  for (unsigned char i = 0; i < decimal; ++i)
-  {
-    rounding /= 10.0;
-  }
-  floatNumber += rounding;
-
-  temp = floatNumber;
-  f += putNumber(temp);
-  if (decimal > 0)
-  {
-    putChar('.');
-    f += 1;
-  }
-  decy = floatNumber - temp;                  //decimal part,
-  for (unsigned char i = 0; i < decimal; i++) //4
-  {
-    decy *= 10;  // for the next decimal
-    temp = decy; //get the decimal
-    putNumber(temp);
-    decy -= temp;
-  }
-  f += decimal;
-  return f;
-}
-
-unsigned char NanoOLED::putFloat(float floatNumber)
-{
-  unsigned char decimal = 2;
-  unsigned int temp = 0;
-  float decy = 0.0;
-  float rounding = 0.5;
-  unsigned char f = 0;
-  if (floatNumber < 0.0)
-  {
-    putString("-");
-    floatNumber = -floatNumber;
-    f += 1;
-  }
-  for (unsigned char i = 0; i < decimal; ++i)
-  {
-    rounding /= 10.0;
-  }
-  floatNumber += rounding;
-
-  temp = floatNumber;
-  f += putNumber(temp);
-  if (decimal > 0)
-  {
-    putChar('.');
-    f += 1;
-  }
-  decy = floatNumber - temp;                  //decimal part,
-  for (unsigned char i = 0; i < decimal; i++) //4
-  {
-    decy *= 10;  // for the next decimal
-    temp = decy; //get the decimal
-    putNumber(temp);
-    decy -= temp;
-  }
-  f += decimal;
-  return f;
-}
-
-void NanoOLED::drawBitmap(unsigned char *bitmaparray, unsigned char row_start, unsigned char col_start, unsigned char row, unsigned char col)
+void NanoOLED::drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col)
 {
 
   if (chipType == SH1106)
   {
     int idx = 0;
-    for (unsigned char p = row_start; p < row_start + row; p++)
+    for (uint8_t p = row_start; p < row_start + row; p++)
     {
       setCursor(p, col_start);
-      for (unsigned char c = 0; c < col;)
+      for (uint8_t c = 0; c < col;)
       {
-        unsigned char n = sendPixels(&bitmaparray[idx], col - c);
+        uint8_t n = sendPixels(&bitmaparray[idx], col - c);
         idx += n;
         c += n;
       }
@@ -423,7 +304,8 @@ void NanoOLED::drawBitmap(unsigned char *bitmaparray, unsigned char row_start, u
     }
     setCursor(row_start, col_start);
     int len = row * col;
-    for(int idx = 0; idx < len;) {
+    for (int idx = 0; idx < len;)
+    {
       idx += sendPixels(&bitmaparray[idx], len - idx);
     }
     if (localAddressMode == PAGE_MODE)
@@ -434,7 +316,7 @@ void NanoOLED::drawBitmap(unsigned char *bitmaparray, unsigned char row_start, u
   }
 }
 
-void NanoOLED::setHorizontalScrollProperties(unsigned char direction, unsigned char startPage, unsigned char endPage, unsigned char scrollSpeed)
+void NanoOLED::setHorizontalScrollProperties(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t scrollSpeed)
 {
   /*
 Use the following defines for 'direction' :
@@ -493,18 +375,27 @@ void NanoOLED::setInverseDisplay()
   sendCommand(OLED_Inverse_Display_Cmd);
 }
 
-NanoOLED::NanoOLED() : chipType(SSD1306)
+#ifdef NANOLED_PRINTF
+void NanoOLED::Printf(const char *fmt, ...)
 {
-  return;
+  char buf[NANOLED_FMT_BUF_SIZE];
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(buf, NANOLED_FMT_BUF_SIZE, fmt, args);
+  va_end(args);
+  Serial.print(buf);
 }
+#endif
 
-NanoOLED::NanoOLED(OLED_CHIP chip) : chipType(chip)
+size_t NanoOLED::write(uint8_t c)
 {
-  return;
+  // Serial.write(c);
+  putChar(c);
+  return 1;
 }
 
 /*
-void NanoOLED::setDisplayArea(unsigned char page_start, unsigned char page_end, unsigned char col_start, unsigned char col_end)
+void NanoOLED::setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end)
 {
   sendCommand(Set_Col_Range);
   sendCommand(col_start);
