@@ -383,13 +383,12 @@ void NanoOLED::Printf(const char *fmt, ...)
   va_start(args, fmt);
   vsnprintf(buf, NANOLED_FMT_BUF_SIZE, fmt, args);
   va_end(args);
-  Serial.print(buf);
+  print(buf);
 }
 #endif
 
 size_t NanoOLED::write(uint8_t c)
 {
-  // Serial.write(c);
   putChar(c);
   return 1;
 }
