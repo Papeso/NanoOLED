@@ -186,47 +186,47 @@ void NanoOLED::defaultInit()
 
 void NanoOLED::sendCommand(unsigned char command)
 {
-  Wire.beginTransmission(NanoOLED_Address); // begin I2C communication
-  Wire_Write(NanoOLED_Command_Mode);        // Set OLED Command mode
+  Wire.beginTransmission(OLED_Address); // begin I2C communication
+  Wire_Write(OLED_Command_Mode);        // Set OLED Command mode
   Wire_Write(command);
   Wire.endTransmission(); // End I2C communication
 }
 
 void NanoOLED::setBrightness(unsigned char Brightness)
 {
-  sendCommand(NanoOLED_Set_Brightness_Cmd);
+  sendCommand(OLED_Set_Brightness_Cmd);
   sendCommand(Brightness);
 }
 
 void NanoOLED::setHorizontalMode()
 {
-  addressingMode = HORIZONTAL_MODE;
-  sendCommand(0x20); //set addressing mode
-  sendCommand(0x00); //set horizontal addressing mode
+  memMode = HORIZONTAL_MODE;
+  sendCommand(OLED_Memory_Mode); //set addressing mode
+  sendCommand(HORIZONTAL_MODE); //set horizontal addressing mode
 }
 
 void NanoOLED::setPageMode()
 {
-  addressingMode = PAGE_MODE;
-  sendCommand(0x20); //set addressing mode
-  sendCommand(0x02); //set page addressing mode
+  memMode = PAGE_MODE;
+  sendCommand(OLED_Memory_Mode); //set addressing mode
+  sendCommand(PAGE_MODE); //set page addressing mode
 }
 
 void NanoOLED::setCursor(unsigned char row, unsigned char col)
 {
-  if (isSH1106)
+  if (chipType == SH1106)
   {
     col = col + 2;
   }
-  sendCommand(Set_Page_Addr + row);                    //set page address
-  sendCommand(Set_Col_LowAddr + (col & 0x0F));         //set column lower address
-  sendCommand(Set_Col_HighAddr + ((col >> 4) & 0x0F)); //set column higher address
+  sendCommand(OLED_MSK_Page_Addr + row);                    //set page address
+  sendCommand(OLED_MSK_Col_LowAddr + (col & 0x0F));         //set column lower address
+  sendCommand(OLED_MSK_Col_HighAddr + ((col >> 4) & 0x0F)); //set column higher address
 }
 
 void NanoOLED::clearDisplay()
 {
   unsigned char i, j;
-  sendCommand(NanoOLED_Display_Off_Cmd); //display off
+  sendCommand(OLED_Display_Off_Cmd); //display off
   for (j = 0; j < 8; j++)
   {
     setCursor(j, 0);
@@ -237,18 +237,18 @@ void NanoOLED::clearDisplay()
       }
     }
   }
-  sendCommand(NanoOLED_Display_On_Cmd); //display on
+  sendCommand(OLED_Display_On_Cmd); //display on
   setCursor(0, 0);
 }
 
 void NanoOLED::sendData(unsigned char Data)
 {
-  Wire.beginTransmission(NanoOLED_Address); // begin I2C transmission
+  Wire.beginTransmission(OLED_Address); // begin I2C transmission
 #if defined(ARDUINO) && ARDUINO >= 100
-  Wire.write(NanoOLED_Data_Mode); // data mode
+  Wire.write(OLED_Data_Mode); // data mode
   Wire.write(Data);
 #else
-  Wire.send(NanoOLED_Data_Mode); // data mode
+  Wire.send(OLED_Data_Mode); // data mode
   Wire.send(Data);
 #endif
   Wire.endTransmission(); // stop I2C transmission
@@ -388,8 +388,8 @@ unsigned char NanoOLED::putFloat(float floatNumber)
 
 void NanoOLED::drawBitmap(unsigned char *bitmaparray, int bytes)
 {
-  char localAddressMode = addressingMode;
-  if (addressingMode != HORIZONTAL_MODE)
+  char localAddressMode = memMode;
+  if (memMode != HORIZONTAL_MODE)
   {
     //Bitmap is drawn in horizontal mode
     setHorizontalMode();
@@ -448,30 +448,30 @@ Use the following defines for 'scrollSpeed' :
 
 void NanoOLED::activateScroll()
 {
-  sendCommand(NanoOLED_Activate_Scroll_Cmd);
+  sendCommand(OLED_Activate_Scroll_Cmd);
 }
 
 void NanoOLED::deactivateScroll()
 {
-  sendCommand(NanoOLED_Dectivate_Scroll_Cmd);
+  sendCommand(OLED_Dectivate_Scroll_Cmd);
 }
 
 void NanoOLED::setNormalDisplay()
 {
-  sendCommand(NanoOLED_Normal_Display_Cmd);
+  sendCommand(OLED_Normal_Display_Cmd);
 }
 
 void NanoOLED::setInverseDisplay()
 {
-  sendCommand(NanoOLED_Inverse_Display_Cmd);
+  sendCommand(OLED_Inverse_Display_Cmd);
 }
 
-NanoOLED::NanoOLED() : isSH1106(false)
+NanoOLED::NanoOLED() : chipType(SSD1306)
 {
   return;
 }
 
-NanoOLED::NanoOLED(bool sh1106) : isSH1106(sh1106)
+NanoOLED::NanoOLED(OLED_CHIP chip) : chipType(chip)
 {
   return;
 }
