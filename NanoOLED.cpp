@@ -255,9 +255,9 @@ size_t NanoOLED::sendPixels(const uint8_t *pix, size_t len)
 {
   Wire.beginTransmission(OLED_Address); // begin I2C transmission
   Wire_Write(OLED_Data_Mode);           // data mode
-  if (len > MAX_I2C_TRANSFER_BYTES - 1)
+  if (len > (MAX_I2C_TRANSFER_BYTES - 1))
   {
-    len = MAX_I2C_TRANSFER_BYTES - 1;
+    len = (MAX_I2C_TRANSFER_BYTES - 1);
   }
   for (size_t idx = 0; idx < len; idx++)
   {
