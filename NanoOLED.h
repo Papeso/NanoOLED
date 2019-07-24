@@ -82,10 +82,10 @@ enum OLED_CMD
     OLED_Dectivate_Scroll_Cmd = 0x2E,
     OLED_Set_Brightness_Cmd = 0x81,
 
-    /* 
+    // Only SSD1306
     OLED_Set_Col_Range = 0x21,
     OLED_Set_Page_Range = 0x22,
-    */
+    
 };
 
 enum SCROLL_DIR
@@ -143,7 +143,9 @@ public:
     void putChar(uint8_t c);
     void drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col);
 
-    // void setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end);
+    void setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end);
+
+    void resetDisplayArea() { setDisplayArea(0, 7, 0, 127); };
 
     void setHorizontalScrollProperties(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t scrollSpeed);
     void activateScroll();

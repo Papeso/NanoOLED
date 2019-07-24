@@ -393,14 +393,14 @@ size_t NanoOLED::write(uint8_t c)
   return 1;
 }
 
-/*
 void NanoOLED::setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end)
 {
-  sendCommand(Set_Col_Range);
+
+  sendCommand(OLED_Set_Col_Range);
   sendCommand(col_start);
   sendCommand(col_end);
-  sendCommand(Set_Page_Range);
+  sendCommand(OLED_Set_Page_Range);
   sendCommand(page_start);
   sendCommand(page_end);
 }
-*/
+
