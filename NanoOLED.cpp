@@ -184,7 +184,8 @@ void NanoOLED::defaultInit()
     sendCommand(initializeCmd[idx]);
   }
 
-  if(chipType == SSD1306) {
+  if (chipType == SSD1306)
+  {
     resetDisplayArea();
   }
 }
@@ -323,6 +324,8 @@ void NanoOLED::drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_s
 
 void NanoOLED::setHorizontalScrollProperties(SCROLL_DIR direction, uint8_t startPage, uint8_t endPage, SCROLL_SPEED scrollSpeed)
 {
+  if (chipType == SH1106)
+    return;
   sendCommand(direction);
   sendCommand(0x00);
   sendCommand(startPage);
@@ -334,11 +337,15 @@ void NanoOLED::setHorizontalScrollProperties(SCROLL_DIR direction, uint8_t start
 
 void NanoOLED::activateScroll()
 {
+  if (chipType == SH1106)
+    return;
   sendCommand(OLED_Activate_Scroll_Cmd);
 }
 
 void NanoOLED::deactivateScroll()
 {
+  if (chipType == SH1106)
+    return;
   sendCommand(OLED_Dectivate_Scroll_Cmd);
 }
 
@@ -372,7 +379,8 @@ size_t NanoOLED::write(uint8_t c)
 
 void NanoOLED::setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end)
 {
-
+  if (chipType == SH1106)
+    return;
   sendCommand(OLED_Set_Col_Range);
   sendCommand(col_start);
   sendCommand(col_end);
