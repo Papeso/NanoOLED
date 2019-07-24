@@ -90,8 +90,8 @@ enum OLED_CMD
 
 enum SCROLL_DIR
 {
-    Scroll_Left = 0x00,
-    Scroll_Right = 0x01,
+    Scroll_Left = 0x27,
+    Scroll_Right = 0x26,
 };
 
 enum SCROLL_SPEED
@@ -147,7 +147,7 @@ public:
 
     void resetDisplayArea() { setDisplayArea(0, 7, 0, 127); };
 
-    void setHorizontalScrollProperties(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t scrollSpeed);
+    void setHorizontalScrollProperties(SCROLL_DIR direction, uint8_t startPage, uint8_t endPage, SCROLL_SPEED scrollSpeed);
     void activateScroll();
     void deactivateScroll();
 };

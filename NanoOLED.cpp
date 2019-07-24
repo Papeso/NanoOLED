@@ -183,6 +183,10 @@ void NanoOLED::defaultInit()
   {
     sendCommand(initializeCmd[idx]);
   }
+
+  if(chipType == SSD1306) {
+    resetDisplayArea();
+  }
 }
 
 void NanoOLED::sendCommand(uint8_t command)
@@ -228,6 +232,7 @@ void NanoOLED::clearDisplay()
 {
   uint8_t i, j;
   sendCommand(OLED_Display_Off_Cmd); //display off
+  resetDisplayArea();
   for (j = 0; j < 8; j++)
   {
     setCursor(j, 0);
@@ -316,37 +321,9 @@ void NanoOLED::drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_s
   }
 }
 
-void NanoOLED::setHorizontalScrollProperties(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t scrollSpeed)
+void NanoOLED::setHorizontalScrollProperties(SCROLL_DIR direction, uint8_t startPage, uint8_t endPage, SCROLL_SPEED scrollSpeed)
 {
-  /*
-Use the following defines for 'direction' :
-
- Scroll_Left
- Scroll_Right
-
-Use the following defines for 'scrollSpeed' :
-
- Scroll_2Frames
- Scroll_3Frames
- Scroll_4Frames
- Scroll_5Frames
- Scroll_25Frames
- Scroll_64Frames
- Scroll_128Frames
- Scroll_256Frames
-
-*/
-
-  if (Scroll_Right == direction)
-  {
-    //Scroll Right
-    sendCommand(0x26);
-  }
-  else
-  {
-    //Scroll Left
-    sendCommand(0x27);
-  }
+  sendCommand(direction);
   sendCommand(0x00);
   sendCommand(startPage);
   sendCommand(scrollSpeed);
@@ -403,4 +380,3 @@ void NanoOLED::setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_
   sendCommand(page_start);
   sendCommand(page_end);
 }
-
