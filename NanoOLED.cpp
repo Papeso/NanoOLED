@@ -143,9 +143,12 @@ const uint8_t BasicFont[][6] PROGMEM =
         {0x00, 0x02, 0x01, 0x01, 0x02, 0x01},
         {0x00, 0x02, 0x05, 0x05, 0x02, 0x00}};
 
+const uint8_t unkonw_char[6] = {0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55};
+
 void NanoOLED::init()
 {
   defaultInit();
+  resetDisplayArea();
 }
 
 void NanoOLED::defaultInit()
@@ -183,7 +186,6 @@ void NanoOLED::defaultInit()
   {
     sendCommand(initializeCmd[idx]);
   }
-  resetDisplayArea();
 }
 
 void NanoOLED::sendCommand(uint8_t command)
@@ -216,6 +218,12 @@ void NanoOLED::setPageMode()
 
 void NanoOLED::setCursor(uint8_t row, uint8_t col)
 {
+  row = row % OLED_HEIGHT;
+  col = col % OLED_WIDTH;
+
+  cursor_row = row;
+  cursor_col = col;
+
   if (chipType == SH1106)
   {
     col = col + 2;
@@ -225,19 +233,33 @@ void NanoOLED::setCursor(uint8_t row, uint8_t col)
   sendCommand(OLED_MSK_Col_HighAddr + ((col >> 4) & 0x0F)); //set column higher address
 }
 
+size_t NanoOLED::repeat(const uint8_t d, size_t len)
+{
+  Wire.beginTransmission(OLED_Address); // begin I2C transmission
+  Wire_Write(OLED_Data_Mode);           // data mode
+  if (len > (MAX_I2C_TRANSFER_BYTES - 1))
+  {
+    len = (MAX_I2C_TRANSFER_BYTES - 1);
+  }
+  for (size_t idx = 0; idx < len; idx++)
+  {
+    Wire_Write(d);
+  }
+  Wire.endTransmission(); // stop I2C transmission
+  return len;
+}
+
 void NanoOLED::clearDisplay()
 {
   uint8_t i, j;
-  sendCommand(OLED_Display_Off_Cmd); //display off
   resetDisplayArea();
+  sendCommand(OLED_Display_Off_Cmd); //display off
   for (j = 0; j < 8; j++)
   {
     setCursor(j, 0);
+    for (int pixs = 0; pixs < OLED_WIDTH;)
     {
-      for (i = 0; i < 128; i++) //clear all columns
-      {
-        sendData(0x00);
-      }
+      pixs += repeat(0x00, OLED_WIDTH - pixs);
     }
   }
   sendCommand(OLED_Display_On_Cmd); //display on
@@ -250,6 +272,18 @@ void NanoOLED::sendData(uint8_t Data)
   Wire_Write(OLED_Data_Mode);           // data mode
   Wire_Write(Data);
   Wire.endTransmission(); // stop I2C transmission
+  moveCursor(1);
+}
+
+void NanoOLED::moveCursor(uint8_t len)
+{
+  cursor_col += len;
+  if (memMode == HORIZONTAL_MODE && cursor_col > OLED_WIDTH)
+  {
+    cursor_row = (cursor_row + 1) % 8;
+  }
+  cursor_col = cursor_col % OLED_WIDTH;
+  Serial.println(cursor_row);
 }
 
 // Max 15 pixels
@@ -266,6 +300,7 @@ size_t NanoOLED::sendPixels(const uint8_t *pix, size_t len)
     Wire_Write(pgm_read_byte(&(pix[idx])));
   }
   Wire.endTransmission(); // stop I2C transmission
+  moveCursor(len);
   return len;
 }
 
@@ -273,7 +308,8 @@ void NanoOLED::putChar(uint8_t c)
 {
   if (c < 32 || c > 127) //Ignore non-printable ASCII characters. This can be modified for multilingual font.
   {
-    c = ' '; //Space
+    sendPixels(unkonw_char, 6);
+    return;
   }
   sendPixels(&BasicFont[c - 32][0], 6); //font array starts at 0, ASCII starts at 32. Hence the translation
 }
@@ -306,7 +342,6 @@ void NanoOLED::drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_s
     }
 
     setDisplayArea(row_start, row_start + row - 1, col_start, col_start + col - 1);
-    // setCursor(row_start, col_start);
     int len = row * col;
     for (int idx = 0; idx < len;)
     {
@@ -373,6 +408,12 @@ void NanoOLED::Printf(const char *fmt, ...)
 
 size_t NanoOLED::write(uint8_t c)
 {
+  if ((c == '\n') || ((cursor_col + 6) > OLED_WIDTH))
+  {
+    setCursor(cursor_row + 1, 0);
+    if (c == '\n')
+      return 1;
+  }
   putChar(c);
   return 1;
 }

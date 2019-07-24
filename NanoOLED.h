@@ -26,6 +26,7 @@
 #define NANOOLED_H
 
 // NanoOLED Instruction set addresses
+#include <stdint.h>
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
@@ -48,6 +49,8 @@
 #endif
 
 const char OLED_Address = 0x3c;
+const uint8_t OLED_WIDTH = 128;
+const uint8_t OLED_HEIGHT = 8;
 
 enum OLED_CHIP
 {
@@ -112,13 +115,18 @@ private:
     OLED_MEMODE memMode;
     OLED_CHIP chipType;
 
+    uint8_t cursor_row, cursor_col;
+
     void defaultInit();
     void setDisplayArea(uint8_t page_start, uint8_t page_end, uint8_t col_start, uint8_t col_end);
-    void resetDisplayArea() { setDisplayArea(0, 7, 0, 127); };
+    void resetDisplayArea() { setDisplayArea(0, OLED_HEIGHT - 1, 0, OLED_WIDTH - 1); };
+    size_t repeat(const uint8_t d, size_t len);
 
 public:
     NanoOLED() : chipType(SSD1306){};
     NanoOLED(OLED_CHIP chip) : chipType(chip){};
+
+    void moveCursor(uint8_t len);
 
     void init();
 
