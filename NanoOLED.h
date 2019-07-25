@@ -151,7 +151,7 @@ public:
     void clearDisplay();
     void setBrightness(uint8_t Brightness);
     void putChar(uint8_t c);
-    void drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col);
+    void drawBitmap(const uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col);
 
     void setHorizontalScrollProperties(SCROLL_DIR direction, uint8_t startPage, uint8_t endPage, SCROLL_SPEED scrollSpeed);
     void activateScroll();

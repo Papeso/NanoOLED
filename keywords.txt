@@ -23,14 +23,14 @@ setCursor	KEYWORD1
 clearDisplay	KEYWORD1
 setBrightness	KEYWORD1
 putChar	KEYWORD1
-putString	KEYWORD1
-putNumber	KEYWORD1
-putFloat	KEYWORD1
+write	KEYWORD1
+print	KEYWORD1
+println	KEYWORD1
 drawBitmap	KEYWORD1
-chipErase	KEYWORD1
 setHorizontalScrollProperties	KEYWORD1
 activateScroll	KEYWORD1
 deactivateScroll	KEYWORD1
+Printf KEYWORD1
 
 
 #######################################
@@ -48,6 +48,9 @@ Scroll_25Frames	LITERAL1
 Scroll_64Frames	LITERAL1
 Scroll_128Frames	LITERAL1
 Scroll_256Frames	LITERAL1
+
+SSD1306	LITERAL1
+SH1106	LITERAL1
 
 #######################################
 # Instances (KEYWORD2)

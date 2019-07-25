@@ -29,7 +29,7 @@ void setup()
   NanoOled.setCursor(0, 0); // set the position of output cursor
   NanoOled.Printf("number: [%d]", 512);
   NanoOled.setCursor(1, 0);
-  NanoOled.print("Hello World");
+  NanoOled.print("Hello World\nHello NanoOLED");
 }
 
 ```

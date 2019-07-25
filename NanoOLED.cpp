@@ -149,6 +149,7 @@ void NanoOLED::init()
 {
   defaultInit();
   resetDisplayArea();
+  setHorizontalMode();
 }
 
 void NanoOLED::defaultInit()
@@ -283,7 +284,6 @@ void NanoOLED::moveCursor(uint8_t len)
     cursor_row = (cursor_row + 1) % 8;
   }
   cursor_col = cursor_col % OLED_WIDTH;
-  Serial.println(cursor_row);
 }
 
 // Max 15 pixels
@@ -314,7 +314,7 @@ void NanoOLED::putChar(uint8_t c)
   sendPixels(&BasicFont[c - 32][0], 6); //font array starts at 0, ASCII starts at 32. Hence the translation
 }
 
-void NanoOLED::drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col)
+void NanoOLED::drawBitmap(const uint8_t *bitmaparray, uint8_t row_start, uint8_t col_start, uint8_t row, uint8_t col)
 {
 
   if (chipType == SH1106)
@@ -342,8 +342,8 @@ void NanoOLED::drawBitmap(uint8_t *bitmaparray, uint8_t row_start, uint8_t col_s
     }
 
     setDisplayArea(row_start, row_start + row - 1, col_start, col_start + col - 1);
-    int len = row * col;
-    for (int idx = 0; idx < len;)
+    size_t len = row * col;
+    for (size_t idx = 0; idx < len;)
     {
       idx += sendPixels(&bitmaparray[idx], len - idx);
     }
