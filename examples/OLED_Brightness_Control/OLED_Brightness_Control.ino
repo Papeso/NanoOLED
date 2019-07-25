@@ -77,7 +77,7 @@ void setup()
 
   NanoOled.setInverseDisplay();                            // Set inverse display
   NanoOled.clearDisplay();                                 // clear the screen and set start position to top left corner
-  NanoOled.drawBitmap(SeeedLogo, 0, 0, 8, 128); 8, 128);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.drawBitmap(SeeedLogo, 0, 0, 8, 128)   // 1024 = 128 Pixels * 64 Pixels / 8
 }
 
 void loop()

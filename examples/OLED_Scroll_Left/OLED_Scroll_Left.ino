@@ -75,7 +75,7 @@ void setup()
   NanoOled.init(); //initialze SEEED OLED display
 
   NanoOled.clearDisplay();                                          // clear the screen and set start position to top left corner
-  NanoOled.drawBitmap(SeeedLogo, 0, 0, 8, 128); 8, 128); 8, 128);   // 1024 = 128 Pixels * 64 Pixels / 8
+  NanoOled.drawBitmap(SeeedLogo, 0, 0, 8, 128) 8, 128);   // 1024 = 128 Pixels * 64 Pixels / 8
   NanoOled.setHorizontalScrollProperties(Scroll_Left, 4, 7, Scroll_5Frames); //Set the properties of Horizontal Scrool
   NanoOled.activateScroll();                                                 // Activate Scroll
 }
