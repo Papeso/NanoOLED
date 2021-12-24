@@ -49,7 +49,7 @@
 #endif
 
 const char OLED_Address = 0x3c;
-const uint8_t OLED_WIDTH = 128;
+const uint8_t OLED_WIDTH = 128;//for sh1106 display it need 132! i really dont know how can be selected in the code :c
 const uint8_t OLED_HEIGHT = 8;
 
 enum OLED_CHIP
